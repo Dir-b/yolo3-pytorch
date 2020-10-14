@@ -53,7 +53,7 @@ class YOLO(object):
         class_names = [c.strip() for c in class_names]
         return class_names
     #---------------------------------------------------#
-    #   获得所有的分类
+    #   生成yolo网络
     #---------------------------------------------------#
     def generate(self):
         self.config["yolo"]["classes"] = len(self.class_names)
@@ -61,16 +61,17 @@ class YOLO(object):
 
         # 加快模型训练的效率
         print('Loading weights into state dict...')
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # GPU or CPU
         state_dict = torch.load(self.model_path, map_location=device)
-        self.net.load_state_dict(state_dict)
-        self.net = self.net.eval()
+        self.net.load_state_dict(state_dict)  # 加载模型
+        self.net = self.net.eval()  # eval把BN和DropOut固定住，不会取平均，而是用训练好的值；训练时使用train()模式
 
         if self.cuda:
-            os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-            self.net = nn.DataParallel(self.net)
-            self.net = self.net.cuda()
+            os.environ["CUDA_VISIBLE_DEVICES"] = '0'  # 指定使用的GPU
+            self.net = nn.DataParallel(self.net)  # 多GPU并行，The batch size should be larger than the number of GPUs used.
+            self.net = self.net.cuda()  # Moves all model parameters and buffers to the GPU.
 
+        # 检测框
         self.yolo_decodes = []
         for i in range(3):
             self.yolo_decodes.append(DecodeBox(self.config["yolo"]["anchors"][i], self.config["yolo"]["classes"],  (self.model_image_size[1], self.model_image_size[0])))

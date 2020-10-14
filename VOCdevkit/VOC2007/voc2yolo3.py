@@ -4,7 +4,8 @@ random.seed(0)
 
 xmlfilepath=r'./VOCdevkit/VOC2007/Annotations'
 saveBasePath=r"./VOCdevkit/VOC2007/ImageSets/Main/"
- 
+xmlfilepath = '/home/uv/auto_pilot/vision/yolo3-pytorch/VOCdevkit/VOC2007/Annotations'
+saveBasePath = '/home/uv/auto_pilot/vision/yolo3-pytorch/VOCdevkit/VOC2007/ImageSets/Main/'
 trainval_percent=1
 train_percent=1
 
